@@ -1203,6 +1203,47 @@ const Account = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Customer portal top bar */}
+      <header className="sticky top-0 z-30 border-b border-gray-200/80 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
+        <div className="max-w-6xl mx-auto px-4 h-[72px] flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-[#E02020] flex items-center justify-center shadow-sm shadow-red-200">
+              <Ico d="M13 10V3L4 14h7v7l9-11h-7z" cls="w-5 h-5 text-white" />
+            </div>
+            <div className="min-w-0">
+              <p className="font-montserrat font-extrabold text-gray-900 leading-tight">Xpola</p>
+              <p className="text-[11px] font-semibold text-gray-400 truncate">Customer Portal · {TAB_TITLES[tab]}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button onClick={() => setTab('notifications')} aria-label={`Notifications${unreadCount ? `, ${unreadCount} unread` : ''}`}
+              className={`relative w-10 h-10 rounded-xl border flex items-center justify-center transition-colors ${tab === 'notifications' ? 'border-blue-200 bg-blue-50 text-blue-600' : 'border-gray-200 bg-white text-gray-500 hover:border-blue-200 hover:text-blue-600'}`}>
+              <Ico d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" cls="w-5 h-5" />
+              {unreadCount > 0 && <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-blue-500 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white">{unreadCount > 9 ? '9+' : unreadCount}</span>}
+            </button>
+
+            <div className="hidden sm:flex items-center gap-2.5 pl-1">
+              {user.avatar ? <img src={user.avatar} alt="" className="w-9 h-9 rounded-full object-cover" /> : (
+                <div className="w-9 h-9 rounded-full bg-gray-900 flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">{user.firstName?.[0]?.toUpperCase() ?? 'U'}</span>
+                </div>
+              )}
+              <div className="hidden md:block max-w-[150px]">
+                <p className="text-sm font-bold text-gray-900 truncate">{user.firstName} {user.lastName}</p>
+                <p className="text-[11px] text-gray-400 truncate">{user.email}</p>
+              </div>
+            </div>
+
+            <button onClick={handleLogout} aria-label="Sign out"
+              className="h-10 px-3 sm:px-4 rounded-xl border border-gray-200 bg-white text-gray-600 hover:border-red-200 hover:bg-red-50 hover:text-red-600 transition-colors flex items-center gap-2 text-sm font-semibold">
+              <Ico d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" cls="w-4 h-4" />
+              <span className="hidden sm:inline">Sign out</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
       <div className="max-w-6xl mx-auto px-4 pt-8 pb-28 md:pb-12 lg:flex lg:gap-8">
         {/* Desktop sidebar */}
         <div className="hidden lg:block w-56 flex-shrink-0">
@@ -1240,12 +1281,6 @@ const Account = () => {
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <div className="lg:hidden flex items-center justify-between mb-4">
-            <h1 className="font-montserrat font-bold text-xl text-gray-900">{TAB_TITLES[tab]}</h1>
-            {tab === 'notifications' && unreadCount > 0 && (
-              <span className="bg-blue-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{unreadCount} new</span>
-            )}
-          </div>
           {tab === 'home'          && <HomeTab setTab={setTab} />}
           {tab === 'orders'        && <OrdersTab />}
           {tab === 'wishlist'      && <WishlistTab />}
