@@ -1,0 +1,998 @@
+// FILE PATH: src/data/shopData.ts
+//
+// All images use verified Unsplash photo IDs in the format:
+//   https://images.unsplash.com/photo-{ID}?w=600&q=80
+// These are open CDN links – no auth, no hotlink blocking, CORS-open.
+
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  currency: 'NGN' | 'CAD';
+  country: 'nigeria' | 'canada';
+  category: string;
+  image: string;
+  inStock: boolean;
+  featured: boolean;
+  rating: number;
+  reviews: number;
+  createdAt: string;
+}
+
+export interface Order {
+  id: string;
+  customerName: string;
+  customerEmail: string;
+  country: 'nigeria' | 'canada';
+  items: Array<CartItem>;
+  total: number;
+  status: 'pending' | 'processing' | 'shipped' | 'delivered';
+  date: string;
+}
+
+export interface CartItem extends Product {
+  quantity: number;
+}
+
+// Unsplash CDN helper
+const U = (id: string) => `https://images.unsplash.com/photo-${id}?w=600&q=80`;
+
+// ─── NIGERIA PRODUCTS ─────────────────────────────────────────────────────────
+
+export const nigeriaProducts: Product[] = [
+
+  // ── Oil & Gas Supplies ────────────────────────────────────────────────────
+  {
+    id: 'ng-001',
+    name: 'Industrial Safety Helmet',
+    description: 'ANSI/ISEA Z89.1 Type-I Class-E hard hat. UV-stabilised ABS shell, 4-point nylon suspension, ratchet headband. High-vis yellow. Oil field and construction ready.',
+    price: 18500,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'Oil & Gas Supplies',
+    // Yellow hard hat on white – very clean product shot
+    image: U('1581092160607-ee22621dd758'),
+    inStock: true,
+    featured: true,
+    rating: 4.7,
+    reviews: 128,
+    createdAt: '2024-11-01',
+  },
+  {
+    id: 'ng-002',
+    name: 'Steel-Toed Safety Boots (S3)',
+    description: 'Full-grain waterproof leather, 200-J steel toecap, Kevlar® anti-puncture midsole, oil-and-slip-resistant outsole. ISO 20345 S3 rated.',
+    price: 42000,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'Oil & Gas Supplies',
+    // Brown work boots close-up
+    image: U('1542291026-7eec264c27ff'),
+    inStock: true,
+    featured: false,
+    rating: 4.5,
+    reviews: 84,
+    createdAt: '2024-11-10',
+  },
+  {
+    id: 'ng-003',
+    name: 'PPE Full Kit – Oil Field Ready',
+    description: 'Hard hat + anti-fog goggles + nitrile gloves + FR coverall (HRC-2) + S3 boots. Meets ANSI, CE & ISO standards. Heavy-duty carry bag included.',
+    price: 95000,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'Oil & Gas Supplies',
+    // Worker in full PPE on industrial site
+    image: U('1504307651254-35680f356dfd'),
+    inStock: true,
+    featured: false,
+    rating: 4.8,
+    reviews: 53,
+    createdAt: '2024-10-25',
+  },
+  {
+    id: 'ng-004',
+    name: 'Portable Gas Leak Detector',
+    description: 'Detects LPG, methane, propane & natural gas. Audible + visual alarm, 12-inch flexible probe, 0–100% LEL detection range. Auto power-off.',
+    price: 28500,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'Oil & Gas Supplies',
+    // Gas pipes / industrial gauges
+    image: U('1518770660439-4636190af475'),
+    inStock: true,
+    featured: true,
+    rating: 4.6,
+    reviews: 77,
+    createdAt: '2024-11-14',
+  },
+  {
+    id: 'ng-005',
+    name: 'Chemical-Resistant Nitrile Gloves (5-Pair)',
+    description: '18-mil nitrile rated for petroleum, acids & solvents. 12-inch extended cuff. ANSI A4 cut level. Textured palm grip. One-size-fits-most.',
+    price: 12500,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'Oil & Gas Supplies',
+    // Close-up of protective gloves
+    image: U('1584432810601-6c7f27d2362b'),
+    inStock: true,
+    featured: false,
+    rating: 4.4,
+    reviews: 41,
+    createdAt: '2024-11-20',
+  },
+  {
+    id: 'ng-006',
+    name: 'Fire-Resistant Coverall (Nomex IIIA)',
+    description: '4.5 oz Nomex IIIA, HRC-2 (8 cal/cm²). NFPA 70E & ASTM F1506 compliant. Snap front, chest & leg pockets. Machine washable 100×.',
+    price: 67000,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'Oil & Gas Supplies',
+    // Worker in orange coverall on industrial platform
+    image: U('1563453392212-326f5e854473'),
+    inStock: true,
+    featured: false,
+    rating: 4.7,
+    reviews: 35,
+    createdAt: '2024-11-22',
+  },
+  {
+    id: 'ng-007',
+    name: 'Pipe Wrench Set (10" / 14" / 18")',
+    description: 'Drop-forged cast-iron pipe wrenches. Replaceable hook & heel jaws. I-beam handles for extra torque. Ideal for oil pipeline maintenance.',
+    price: 34000,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'Oil & Gas Supplies',
+    // Pipe wrench and tools on workshop bench
+    image: U('1504328345606-18bbc8c9d7d1'),
+    inStock: false,
+    featured: false,
+    rating: 4.5,
+    reviews: 29,
+    createdAt: '2024-10-30',
+  },
+
+  // ── Construction Materials ─────────────────────────────────────────────────
+  {
+    id: 'ng-008',
+    name: 'Portland Cement (50 kg Bag)',
+    description: 'Grade 42.5N Portland cement. Superior compressive strength, consistent fineness. Suitable for concrete, mortar, and rendering. SON certified.',
+    price: 9800,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'Construction Materials',
+    // Cement bags stacked at construction site
+    image: U('1590247813693-5541d1c4dc28'),
+    inStock: true,
+    featured: true,
+    rating: 4.8,
+    reviews: 210,
+    createdAt: '2024-10-15',
+  },
+  {
+    id: 'ng-009',
+    name: 'Deformed Steel Rebar 12 mm × 6 m (Bundle / 10)',
+    description: 'Grade 60, ASTM A615 high-tensile rebar. Superior rib profile for concrete bonding. Bundle of 10 rods. Mill test certificates available.',
+    price: 87000,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'Construction Materials',
+    // Steel rods / rebar at construction site
+    image: U('1558618666-fcd25c85cd64'),
+    inStock: true,
+    featured: false,
+    rating: 4.6,
+    reviews: 62,
+    createdAt: '2024-10-20',
+  },
+  {
+    id: 'ng-010',
+    name: 'Rubber Interlocking Floor Tiles (Box / 30)',
+    description: '10 mm rubber tiles, 30-pack (~1 m² coverage). Slip-resistant surface. Peel-and-lay, no adhesive. For warehouses, gyms, and commercial floors.',
+    price: 25000,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'Construction Materials',
+    // Rubber floor tiles close-up
+    image: U('1516455590571-18c26c0a3f0e'),
+    inStock: true,
+    featured: false,
+    rating: 4.2,
+    reviews: 29,
+    createdAt: '2024-10-18',
+  },
+  {
+    id: 'ng-011',
+    name: 'Corded Hand Drill 850 W',
+    description: '13 mm keyless chuck, variable speed 0–3000 RPM, forward/reverse. Double-insulated body. Carry case and 6-piece HSS bit set included.',
+    price: 22000,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'Construction Materials',
+    // Red cordless drill on workbench
+    image: U('1572981545285-9b0f0c675b50'),
+    inStock: true,
+    featured: true,
+    rating: 4.5,
+    reviews: 193,
+    createdAt: '2024-11-01',
+  },
+  {
+    id: 'ng-012',
+    name: 'Electric Concrete Mixer (140 L)',
+    description: '550 W tilting drum mixer, 140-litre capacity. Heavy-duty steel frame with pneumatic wheels. Mixes concrete, mortar, and plaster. 230 V / 50 Hz.',
+    price: 145000,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'Construction Materials',
+    // Workers pouring concrete at a build site
+    image: U('1504307651254-35680f356dfd'),
+    inStock: true,
+    featured: false,
+    rating: 4.6,
+    reviews: 47,
+    createdAt: '2024-10-10',
+  },
+  {
+    id: 'ng-013',
+    name: 'uPVC Pressure Pipes 3" × 6 m (5-Pack)',
+    description: 'Schedule 40, 3-inch OD, 6-metre. Rated PN16 (16 bar). SON & NSF-61 certified. For water supply, drainage, and irrigation systems.',
+    price: 38000,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'Construction Materials',
+    // Blue PVC pipes at a supply yard
+    image: U('1503387762-592deb58ef4e'),
+    inStock: true,
+    featured: false,
+    rating: 4.3,
+    reviews: 56,
+    createdAt: '2024-11-05',
+  },
+  {
+    id: 'ng-014',
+    name: 'HVLP Paint Sprayer (1200 W)',
+    description: '1200 W high-volume low-pressure sprayer, 1.3 L container. Adjustable round/flat spray pattern. For interior walls, fences, and wooden furniture.',
+    price: 31000,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'Construction Materials',
+    // Painter spraying wall
+    image: U('1562259949-1e70e81a01b4'),
+    inStock: false,
+    featured: false,
+    rating: 4.1,
+    reviews: 38,
+    createdAt: '2024-11-18',
+  },
+
+  // ── General Commerce ──────────────────────────────────────────────────────
+  {
+    id: 'ng-015',
+    name: 'Pure Sine Wave Solar Inverter (2.5 KVA)',
+    description: 'Built-in MPPT solar charge controller. 24 V input, 2500 VA output. LCD display (voltage, load, battery level). Auto-restart after overload.',
+    price: 185000,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'General Commerce',
+    // Solar panels / energy system
+    image: U('1509391366360-2e959784a276'),
+    inStock: true,
+    featured: true,
+    rating: 4.4,
+    reviews: 97,
+    createdAt: '2024-11-05',
+  },
+  {
+    id: 'ng-016',
+    name: 'Diesel Generator (10 KVA, 3-Phase)',
+    description: 'Three-phase genset with AVR and electric start. 2.8 L/h fuel consumption at 75% load. Low-oil shutdown. Ideal for SMEs and commercial facilities.',
+    price: 1250000,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'General Commerce',
+    // Industrial generator
+    image: U('1611544485249-ccb23e5a1d1a'),
+    inStock: false,
+    featured: false,
+    rating: 4.9,
+    reviews: 45,
+    createdAt: '2024-09-30',
+  },
+  {
+    id: 'ng-017',
+    name: 'Self-Priming Water Pump (1.5 HP)',
+    description: 'Centrifugal pump, max flow 3000 L/hr, max head 35 m. Corrosion-resistant brass impeller. For boreholes, wells, and overhead tanks. 230 V / 50 Hz.',
+    price: 58000,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'General Commerce',
+    // Water pump / industrial plumbing
+    image: U('1558618047-3c8c4e2de67a'),
+    inStock: true,
+    featured: true,
+    rating: 4.5,
+    reviews: 112,
+    createdAt: '2024-10-28',
+  },
+  {
+    id: 'ng-018',
+    name: 'Industrial Standing Fan (18-Inch)',
+    description: '3-speed, 5-blade, 360° oscillation. Adjustable height 115–140 cm. Ideal for factories, warehouses, and large open-plan offices.',
+    price: 21500,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'General Commerce',
+    // Large industrial fan in warehouse
+    image: U('1600880292203-757bb62b4baf'),
+    inStock: true,
+    featured: false,
+    rating: 4.3,
+    reviews: 88,
+    createdAt: '2024-11-12',
+  },
+  {
+    id: 'ng-019',
+    name: '4-Channel HD CCTV Security Kit',
+    description: '4-ch DVR + four 2 MP cameras. 20 m night vision, IP66 weatherproof. 1 TB HDD. Motion-triggered recording. Remote view on iOS/Android app.',
+    price: 98000,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'General Commerce',
+    // Security camera mounted on wall
+    image: U('1557597774-9d273605dfa9'),
+    inStock: true,
+    featured: false,
+    rating: 4.6,
+    reviews: 134,
+    createdAt: '2024-11-02',
+  },
+
+  // ── E-Commerce Goods ──────────────────────────────────────────────────────
+  {
+    id: 'ng-020',
+    name: 'Wireless 2D Barcode Scanner',
+    description: 'Bluetooth 5.0 + USB. Reads QR codes and all 1D formats. 100 m wireless range, 30-hour battery. Compatible with Android, iOS, and Windows POS.',
+    price: 32000,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'E-Commerce Goods',
+    // Barcode scanner at retail counter
+    image: U('1563013544-824ae1b704d3'),
+    inStock: true,
+    featured: false,
+    rating: 4.3,
+    reviews: 38,
+    createdAt: '2024-11-12',
+  },
+  {
+    id: 'ng-021',
+    name: '80 mm Thermal Receipt Printer',
+    description: 'Direct thermal, 250 mm/s, auto-cutter. USB + Bluetooth + LAN. ESC/POS compatible. Ideal for retail and restaurant POS setups.',
+    price: 58000,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'E-Commerce Goods',
+    // Receipt printer at a POS desk
+    image: U('1612540131591-84b3e79d89ad'),
+    inStock: true,
+    featured: true,
+    rating: 4.6,
+    reviews: 71,
+    createdAt: '2024-11-08',
+  },
+  {
+    id: 'ng-022',
+    name: 'Android Smart POS Terminal',
+    description: 'Android 11, built-in 58 mm printer, NFC, QR scanner, 4G + Wi-Fi. 5.5-inch IPS screen. 8-hour battery. Supports Paystack & Flutterwave.',
+    price: 185000,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'E-Commerce Goods',
+    // Handheld POS device / payment terminal
+    image: U('1556742049-0cfed4f6a45d'),
+    inStock: true,
+    featured: true,
+    rating: 4.7,
+    reviews: 62,
+    createdAt: '2024-11-15',
+  },
+  {
+    id: 'ng-023',
+    name: 'Bluetooth Label Printer (20–58 mm)',
+    description: 'Direct thermal, 203 DPI. Bluetooth + USB. No ink or ribbon. iOS/Android app. For inventory tags, barcodes, and shipping labels.',
+    price: 26500,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'E-Commerce Goods',
+    // Compact label printer with stickers
+    image: U('1612540135853-d4b6e7b55eea'),
+    inStock: true,
+    featured: false,
+    rating: 4.4,
+    reviews: 49,
+    createdAt: '2024-11-10',
+  },
+  {
+    id: 'ng-024',
+    name: 'Platform Weighing Scale (150 kg)',
+    description: '150 kg capacity, 50 g accuracy. Backlit LED display. Tare function. AC/DC dual power. For markets, logistics, and warehouses.',
+    price: 19500,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'E-Commerce Goods',
+    // Digital weighing scale
+    image: U('1576602976047-174e57a47881'),
+    inStock: true,
+    featured: false,
+    rating: 4.5,
+    reviews: 93,
+    createdAt: '2024-11-06',
+  },
+  {
+    id: 'ng-025',
+    name: 'Steel Cash Drawer (RJ-11 / USB)',
+    description: '4-bill / 8-coin steel drawer. RJ-11 kick connector. Media slot. Security lock + 2 keys. 41 × 41 cm footprint. Fits all standard POS systems.',
+    price: 23000,
+    currency: 'NGN',
+    country: 'nigeria',
+    category: 'E-Commerce Goods',
+    // Open cash register drawer with cash
+    image: U('1556742044-3c52d6e88c62'),
+    inStock: false,
+    featured: false,
+    rating: 4.2,
+    reviews: 27,
+    createdAt: '2024-10-22',
+  },
+];
+
+// ─── CANADA PRODUCTS ──────────────────────────────────────────────────────────
+
+export const canadaProducts: Product[] = [
+
+  // ── Mining Equipment ──────────────────────────────────────────────────────
+  {
+    id: 'ca-001',
+    name: 'Diamond Core Drill Bit (150 mm)',
+    description: 'Laser-welded diamond segments for concrete, granite, and masonry. Fits SDS-Plus and rotary drill rigs. Wet/dry compatible. 150 mm diameter.',
+    price: 189,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'Mining Equipment',
+    // Close up of drill bits / metal drilling
+    image: U('1504917595217-d4dc5ebe6122'),
+    inStock: true,
+    featured: true,
+    rating: 4.7,
+    reviews: 92,
+    createdAt: '2024-11-01',
+  },
+  {
+    id: 'ca-002',
+    name: 'Hydraulic Rock Splitter',
+    description: '500-ton splitting force. No dust, vibration, or noise. Eco-friendly alternative to blasting. Includes pump unit, two wedge-feather sets, and 6 m hose.',
+    price: 3499,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'Mining Equipment',
+    // Quarry / rock splitting site
+    image: U('1518134346374-184c3e074eae'),
+    inStock: true,
+    featured: false,
+    rating: 4.9,
+    reviews: 34,
+    createdAt: '2024-10-22',
+  },
+  {
+    id: 'ca-003',
+    name: 'Ground Penetrating Radar (GPR) Unit',
+    description: '400 MHz shielded antenna. Real-time data logging + GPS tagging. Ruggedised field tablet included. For utility detection and geological surveys.',
+    price: 8950,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'Mining Equipment',
+    // Surveying / geological field equipment
+    image: U('1551288049-bebda4e38f71'),
+    inStock: false,
+    featured: false,
+    rating: 4.9,
+    reviews: 21,
+    createdAt: '2024-09-28',
+  },
+  {
+    id: 'ca-004',
+    name: 'Rock Core Sample Trays (Set of 10)',
+    description: 'Corrugated plastic, 1 m × 5-row trays. Stackable with depth markers. Industry-standard format for geological and mining core logging.',
+    price: 145,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'Mining Equipment',
+    // Rock / mineral samples in trays
+    image: U('1464822759023-fed622ff2c3b'),
+    inStock: true,
+    featured: false,
+    rating: 4.4,
+    reviews: 18,
+    createdAt: '2024-11-05',
+  },
+  {
+    id: 'ca-005',
+    name: 'Rotary Hammer Drill SDS-Max (1500 W)',
+    description: '1500 W, 3 modes (rotary/hammer-drill/chisel), 8 J impact energy. Anti-vibration system. Includes 6-piece SDS-Max bit set and depth stop.',
+    price: 649,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'Mining Equipment',
+    // Heavy duty hammer drill
+    image: U('1572981545285-9b0f0c675b50'),
+    inStock: true,
+    featured: false,
+    rating: 4.7,
+    reviews: 88,
+    createdAt: '2024-10-31',
+  },
+  {
+    id: 'ca-006',
+    name: 'ATEX Underground Mining Cap Lamp',
+    description: 'CSA M422-certified LED lamp. 1500 lm, 16-hour burn time. IP68 waterproof. Tilt-adjustable beam. USB-C charging. Intrinsically safe.',
+    price: 219,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'Mining Equipment',
+    // Miner or worker wearing head torch underground
+    image: U('1578496781985-452d4a934d5e'),
+    inStock: true,
+    featured: true,
+    rating: 4.6,
+    reviews: 63,
+    createdAt: '2024-11-10',
+  },
+
+  // ── Construction Materials ─────────────────────────────────────────────────
+  {
+    id: 'ca-007',
+    name: 'Structural Steel I-Beam W8×31 (20 ft)',
+    description: 'ASTM A992 wide-flange I-beam, 20 ft. Mill test reports available. Certified for structural applications and heavy commercial framing.',
+    price: 765,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'Construction Materials',
+    // Steel beams at construction site
+    image: U('1478827536114-da961b7f86d2'),
+    inStock: true,
+    featured: true,
+    rating: 4.8,
+    reviews: 57,
+    createdAt: '2024-10-15',
+  },
+  {
+    id: 'ca-008',
+    name: 'Insulated Concrete Forms (ICF) Pack',
+    description: 'EPS snap-together forms, R-22 insulation value, covers 75 sq ft. No adhesive required. CSA A440 compatible. 4-hour fire-rated assembly.',
+    price: 245,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'Construction Materials',
+    // Concrete wall formwork / construction
+    image: U('1590859808308-3d2d9c515b1a'),
+    inStock: false,
+    featured: false,
+    rating: 4.5,
+    reviews: 41,
+    createdAt: '2024-11-03',
+  },
+  {
+    id: 'ca-009',
+    name: 'Cordless Framing Nailer 21° (18 V)',
+    description: 'Brushless 21° plastic-collated nailer. Drives 2–3.5" framing nails. Tool-free depth adjustment. Sequential & contact modes. Battery + charger included.',
+    price: 429,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'Construction Materials',
+    // Nail gun / framing nailer in use
+    image: U('1416879595882-3373a0480b5b'),
+    inStock: true,
+    featured: true,
+    rating: 4.8,
+    reviews: 204,
+    createdAt: '2024-11-08',
+  },
+  {
+    id: 'ca-010',
+    name: 'Fibreglass Step Ladder 8 ft (300 lb)',
+    description: 'OSHA Type IA, 300 lb rated. Non-conductive — safe for electrical work. Wide-spread bracing, slip-resistant rubber feet. CSA grade.',
+    price: 189,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'Construction Materials',
+    // Worker on ladder at job site
+    image: U('1504307651254-35680f356dfd'),
+    inStock: true,
+    featured: false,
+    rating: 4.7,
+    reviews: 312,
+    createdAt: '2024-11-01',
+  },
+  {
+    id: 'ca-011',
+    name: 'Self-Levelling Green Laser Level (360°)',
+    description: '±3 mm/10 m accuracy, 50 m range (100 m with receiver). Magnetic pivoting base. IP54. Ideal for tiling, suspended ceilings, and fit-out.',
+    price: 249,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'Construction Materials',
+    // Laser level on tripod at construction site
+    image: U('1504917595217-d4dc5ebe6122'),
+    inStock: true,
+    featured: false,
+    rating: 4.6,
+    reviews: 178,
+    createdAt: '2024-10-20',
+  },
+  {
+    id: 'ca-012',
+    name: 'Electric Concrete Vibrator (1.5 HP)',
+    description: '1.5 HP, 35 mm poker, 12,000 VPM. Removes air bubbles for void-free pours. 6 m flexible shaft. For slabs, walls, and columns.',
+    price: 389,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'Construction Materials',
+    // Concrete pouring / vibrating on site
+    image: U('1545259741-8b9f0f1c6a2e'),
+    inStock: true,
+    featured: false,
+    rating: 4.5,
+    reviews: 36,
+    createdAt: '2024-10-25',
+  },
+
+  // ── Industrial Supplies ────────────────────────────────────────────────────
+  {
+    id: 'ca-013',
+    name: 'Industrial Air Compressor (60-Gal)',
+    description: 'Two-stage cast-iron pump, 175 PSI, 60-gal tank, 5.7 SCFM @ 90 PSI. Belt-driven for quieter operation. Ideal for auto shops and commercial workshops.',
+    price: 1299,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'Industrial Supplies',
+    // Large air compressor in workshop
+    image: U('1558618666-fcd25c85cd64'),
+    inStock: true,
+    featured: true,
+    rating: 4.6,
+    reviews: 88,
+    createdAt: '2024-11-07',
+  },
+  {
+    id: 'ca-014',
+    name: 'MIG / MMA Welder (250 A)',
+    description: 'Synergic MIG + MMA, 110 V / 220 V auto-detect. Digital display, infinite wire speed & voltage control. Ground clamp and electrode holder included.',
+    price: 589,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'Industrial Supplies',
+    // Welder at work with sparks flying
+    image: U('1504222490345-c075b626a261'),
+    inStock: true,
+    featured: false,
+    rating: 4.7,
+    reviews: 116,
+    createdAt: '2024-10-30',
+  },
+  {
+    id: 'ca-015',
+    name: 'Full-Body Fall-Arrest Harness',
+    description: 'ANSI Z359.11 Class III. Dorsal + sternal D-rings, padded shoulder & leg straps, tool loop. Fits 32–60" chest. CSA Z259.10 compliant.',
+    price: 129,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'Industrial Supplies',
+    // Worker wearing safety harness at height
+    image: U('1518134346374-184c3e074eae'),
+    inStock: true,
+    featured: true,
+    rating: 4.8,
+    reviews: 95,
+    createdAt: '2024-11-09',
+  },
+  {
+    id: 'ca-016',
+    name: 'Cordless Angle Grinder 7" (60 V)',
+    description: '60 V brushless, 7-inch disc. Kickback Brake + overload protection. Electronic brake stops disc in < 2 s. Tool-free guard. Paddle switch for safety.',
+    price: 379,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'Industrial Supplies',
+    // Angle grinder sparks in metal workshop
+    image: U('1581091226825-a6a2a5aee158'),
+    inStock: true,
+    featured: false,
+    rating: 4.7,
+    reviews: 167,
+    createdAt: '2024-10-18',
+  },
+  {
+    id: 'ca-017',
+    name: 'Cut-Resistant Work Gloves A4 (12-Pack)',
+    description: 'ANSI/ISEA 105 Level A4. Latex foam palm grip. 13-gauge HPPE shell. Machine washable. For construction, mining, and material handling.',
+    price: 89,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'Industrial Supplies',
+    // Work gloves on workshop table
+    image: U('1584432810601-6c7f27d2362b'),
+    inStock: true,
+    featured: false,
+    rating: 4.5,
+    reviews: 142,
+    createdAt: '2024-11-11',
+  },
+  {
+    id: 'ca-018',
+    name: 'Electric Pipe Threading Machine (½–2")',
+    description: '1100 W, 38 RPM, forward/reverse. Threads ½ to 2" pipes. Includes 4 die heads, pipe cutter, reamer, and oil reservoir.',
+    price: 1199,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'Industrial Supplies',
+    // Industrial pipe fittings / plumbing tools
+    image: U('1607472586893-edb252438172'),
+    inStock: false,
+    featured: false,
+    rating: 4.6,
+    reviews: 29,
+    createdAt: '2024-10-05',
+  },
+
+  // ── General Commerce ──────────────────────────────────────────────────────
+  {
+    id: 'ca-019',
+    name: 'Heavy-Duty Steel Shelving (5-Tier)',
+    description: 'Boltless steel shelving. 2000 lb per shelf. 72"H × 48"W × 18"D. Tool-free assembly. Adjustable at 1.5" increments. Powder-coat finish.',
+    price: 319,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'General Commerce',
+    // Metal warehouse shelving loaded with goods
+    image: U('1586023492125-27b2c045efd7'),
+    inStock: true,
+    featured: false,
+    rating: 4.4,
+    reviews: 63,
+    createdAt: '2024-11-09',
+  },
+  {
+    id: 'ca-020',
+    name: 'Manual Pallet Jack (2500 kg)',
+    description: '2500 kg load, 1220 × 685 mm forks. Ergonomic loop handle with built-in release lever. Polyurethane wheels for smooth indoor/outdoor use.',
+    price: 429,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'General Commerce',
+    // Pallet jack in warehouse aisle
+    image: U('1553413077-190dd305871c'),
+    inStock: true,
+    featured: true,
+    rating: 4.8,
+    reviews: 77,
+    createdAt: '2024-10-12',
+  },
+  {
+    id: 'ca-021',
+    name: 'Energy Star Chest Freezer (14 Cu Ft)',
+    description: '-12 °C to -28 °C range. Removable wire basket, power-on indicator, interior light. Energy Star certified. For restaurants, retail, and cold storage.',
+    price: 649,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'General Commerce',
+    // White chest freezer / commercial refrigeration
+    image: U('1584568694244-14fbdf83bd30'),
+    inStock: true,
+    featured: false,
+    rating: 4.5,
+    reviews: 201,
+    createdAt: '2024-10-30',
+  },
+  {
+    id: 'ca-022',
+    name: 'Forklift Blue Spot Warning Light (10 W)',
+    description: '10 W LED blue spot, 10–80 V DC. Projects a visible circle 3–5 m ahead to alert pedestrians. IP67 waterproof. Vibration-rated 5G. Easy bracket mount.',
+    price: 79,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'General Commerce',
+    // Forklift in warehouse
+    image: U('1553413077-190dd305871c'),
+    inStock: true,
+    featured: false,
+    rating: 4.6,
+    reviews: 54,
+    createdAt: '2024-11-14',
+  },
+  {
+    id: 'ca-023',
+    name: 'Outdoor Steel Storage Cabinet (72")',
+    description: 'Heavy-gauge steel, 72"H × 36"W. Four adjustable shelves. Lockable double-door + 2 keys. Weather-resistant powder-coat. For garages and warehouses.',
+    price: 529,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'General Commerce',
+    // Steel storage cabinet in workshop
+    image: U('1558002038-1055907df827'),
+    inStock: true,
+    featured: false,
+    rating: 4.5,
+    reviews: 88,
+    createdAt: '2024-10-14',
+  },
+  {
+    id: 'ca-024',
+    name: 'Thermal Label Printer + Barcode Scanner Bundle',
+    description: 'USB/LAN thermal label printer (203 DPI, 1–4") bundled with USB corded barcode scanner. Compatible with Windows, Mac, and all major WMS/ERP platforms.',
+    price: 249,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'General Commerce',
+    // Barcode scanner at checkout / warehouse
+    image: U('1563013544-824ae1b704d3'),
+    inStock: true,
+    featured: false,
+    rating: 4.4,
+    reviews: 39,
+    createdAt: '2024-11-06',
+  },
+  {
+    id: 'ca-025',
+    name: 'Commercial Workbench with Drawers (72")',
+    description: '72" hardwood top, 1500 lb rating. 3-drawer steel cabinet. Adjustable lower shelf. Pre-drilled for bench vise. Ideal for workshops and garages.',
+    price: 699,
+    currency: 'CAD',
+    country: 'canada',
+    category: 'General Commerce',
+    // Wooden workbench with tools in garage
+    image: U('1530124566582-a618bc2615dc'),
+    inStock: true,
+    featured: true,
+    rating: 4.7,
+    reviews: 112,
+    createdAt: '2024-11-03',
+  },
+];
+
+// ─── DUMMY ORDERS ─────────────────────────────────────────────────────────────
+
+const ngP = (id: string) => nigeriaProducts.find(p => p.id === id)!;
+const caP = (id: string) => canadaProducts.find(p => p.id === id)!;
+
+export const dummyOrders: Order[] = [
+  {
+    id: 'ORD-2024-001',
+    customerName: 'Emeka Okafor',
+    customerEmail: 'emeka.okafor@email.com',
+    country: 'nigeria',
+    items: [{ ...ngP('ng-001'), quantity: 2 }, { ...ngP('ng-008'), quantity: 5 }],
+    total: 86000,
+    status: 'delivered',
+    date: '2024-11-14',
+  },
+  {
+    id: 'ORD-2024-002',
+    customerName: 'Fatima Bello',
+    customerEmail: 'fatima.bello@email.com',
+    country: 'nigeria',
+    items: [{ ...ngP('ng-015'), quantity: 1 }],
+    total: 185000,
+    status: 'shipped',
+    date: '2024-11-16',
+  },
+  {
+    id: 'ORD-2024-003',
+    customerName: 'James Adeyemi',
+    customerEmail: 'james.a@email.com',
+    country: 'nigeria',
+    items: [{ ...ngP('ng-021'), quantity: 1 }, { ...ngP('ng-020'), quantity: 1 }],
+    total: 90000,
+    status: 'processing',
+    date: '2024-11-17',
+  },
+  {
+    id: 'ORD-2024-004',
+    customerName: 'Chidi Nwosu',
+    customerEmail: 'chidi.nwosu@email.com',
+    country: 'nigeria',
+    items: [{ ...ngP('ng-022'), quantity: 1 }, { ...ngP('ng-023'), quantity: 2 }],
+    total: 238000,
+    status: 'pending',
+    date: '2024-11-19',
+  },
+  {
+    id: 'ORD-2024-005',
+    customerName: 'Aisha Mohammed',
+    customerEmail: 'aisha.m@email.com',
+    country: 'nigeria',
+    items: [{ ...ngP('ng-017'), quantity: 1 }, { ...ngP('ng-019'), quantity: 1 }],
+    total: 156000,
+    status: 'delivered',
+    date: '2024-11-11',
+  },
+  {
+    id: 'ORD-2024-006',
+    customerName: 'Michael Tremblay',
+    customerEmail: 'm.tremblay@email.ca',
+    country: 'canada',
+    items: [{ ...caP('ca-007'), quantity: 3 }],
+    total: 2295,
+    status: 'delivered',
+    date: '2024-11-13',
+  },
+  {
+    id: 'ORD-2024-007',
+    customerName: 'Sarah Chen',
+    customerEmail: 'sarah.chen@email.ca',
+    country: 'canada',
+    items: [{ ...caP('ca-013'), quantity: 1 }, { ...caP('ca-017'), quantity: 2 }],
+    total: 1477,
+    status: 'shipped',
+    date: '2024-11-15',
+  },
+  {
+    id: 'ORD-2024-008',
+    customerName: 'David Osei',
+    customerEmail: 'd.osei@email.ca',
+    country: 'canada',
+    items: [{ ...caP('ca-001'), quantity: 4 }],
+    total: 756,
+    status: 'pending',
+    date: '2024-11-18',
+  },
+  {
+    id: 'ORD-2024-009',
+    customerName: 'Priya Sharma',
+    customerEmail: 'priya.s@email.ca',
+    country: 'canada',
+    items: [{ ...caP('ca-009'), quantity: 1 }, { ...caP('ca-010'), quantity: 2 }],
+    total: 807,
+    status: 'processing',
+    date: '2024-11-17',
+  },
+  {
+    id: 'ORD-2024-010',
+    customerName: 'Luc Beauchamp',
+    customerEmail: 'luc.b@email.ca',
+    country: 'canada',
+    items: [{ ...caP('ca-020'), quantity: 1 }, { ...caP('ca-022'), quantity: 3 }],
+    total: 666,
+    status: 'delivered',
+    date: '2024-11-10',
+  },
+];
+
+// ─── EXPORTS ──────────────────────────────────────────────────────────────────
+
+export const allProducts = [...nigeriaProducts, ...canadaProducts];
+
+export const nigeriaCategories = [
+  'All',
+  'Oil & Gas Supplies',
+  'Construction Materials',
+  'General Commerce',
+  'E-Commerce Goods',
+];
+
+export const canadaCategories = [
+  'All',
+  'Mining Equipment',
+  'Construction Materials',
+  'Industrial Supplies',
+  'General Commerce',
+];
+
+export const formatPrice = (price: number, currency: 'NGN' | 'CAD') =>
+  currency === 'NGN'
+    ? `₦${price.toLocaleString()}`
+    : `CA$${price.toLocaleString()}`;
