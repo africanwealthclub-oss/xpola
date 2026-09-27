@@ -1,8 +1,6 @@
 // FILE PATH: src/pages/Account.tsx
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import { useAuth, SavedAddress } from '@/contexts/AuthContext';
 import { useCountry } from '@/contexts/CountryContext';
 import { ordersApi, supportApi, Order, SupportTicket } from '@/lib/api';
@@ -1205,8 +1203,7 @@ const Account = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
-      <div className="max-w-6xl mx-auto px-4 pt-8 pb-28 md:pb-12 lg:flex lg:gap-8 mt-[72px]">
+      <div className="max-w-6xl mx-auto px-4 pt-8 pb-28 md:pb-12 lg:flex lg:gap-8">
         {/* Desktop sidebar */}
         <div className="hidden lg:block w-56 flex-shrink-0">
           <div className="sticky top-24 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">

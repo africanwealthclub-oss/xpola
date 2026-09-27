@@ -363,7 +363,7 @@ stats: [
     ],
     contact: {
       email: ["info@xpolaservices.ca", "+1 (855) 708 3859"],
-      phone: ["+1 (855) 708 3859", "Mon - Fri, 9AM - 5PM"],
+      phone: ["+1 306 730 0639", "Mon - Fri, 9AM - 5PM"],
       hours: ["Monday - Friday", "9:00 AM - 5:00 PM EST"],
       address: "Toronto, Ontario, Canada"
     },
