@@ -362,7 +362,7 @@ stats: [
       }
     ],
     contact: {
-      email: ["info@xpolaservices.ca"],
+      email: ["info@xpolaservices.com", "xpolaservices@gmail.com"],
       phone: ["+1 306 730 0639", "Mon - Fri, 9AM - 5PM"],
       hours: ["Monday - Friday", "9:00 AM - 5:00 PM EST"],
       address: "Toronto, Ontario, Canada"
