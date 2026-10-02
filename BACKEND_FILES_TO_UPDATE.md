@@ -8,6 +8,8 @@ The current repository contains the React/Vite frontend. The live PHP API is hos
    - Keep an order in a pre-payment state while checkout is open.
    - Treat `status = 'pending'` with `payment_status != 'paid'` as `Awaiting Payment`; reject admin attempts to change that order to processing, shipped, delivered, or cancelled.
    - Only Paystack verification/webhook success may set `payment_status = 'paid'` and transition the order to `processing` (displayed as `Processing (Paid)`).
+   - Allow an authenticated customer to resume payment for their own unpaid order using a fresh Paystack reference, while keeping the original `order_id` and server-calculated total.
+   - On `action=confirm_payment`, verify the fresh reference server-to-server with Paystack, confirm it belongs to the authenticated customer/order and matches the order currency and amount, then set `payment_status = 'paid'` and `status = 'processing'` idempotently.
    - Set both `status = 'failed'` and `payment_status = 'failed'` when Paystack returns a declined, abandoned, cancelled, or otherwise unsuccessful result.
    - Set `payment_status = 'paid'` and move the order to `paid`/`processing` when Paystack verification or the webhook confirms payment.
    - Make the update idempotent using the Paystack reference and `order_id`.
