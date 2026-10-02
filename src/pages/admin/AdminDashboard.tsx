@@ -1165,7 +1165,7 @@ const AuditLogPanel = () => {
 
   const load = () => {
     setLoading(true);
-    adminApi.getAuditLog(filter ? `admin=${encodeURIComponent(filter)}` : undefined)
+    adminApi.getAuditLog(filter ? `actor=${encodeURIComponent(filter)}` : undefined)
       .then(res => { setLogs(res.data ?? []); setTotal(res.total ?? 0); })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -1181,6 +1181,10 @@ const AuditLogPanel = () => {
     CREATE_ADMIN: 'bg-yellow-100 text-yellow-700',
     DELETE_ADMIN: 'bg-red-100 text-red-600',
     SUPPORT_REPLY: 'bg-teal-100 text-teal-700',
+    LOGIN: 'bg-indigo-100 text-indigo-700',
+    LOGOUT: 'bg-gray-100 text-gray-700',
+    PAYMENT_FAILED: 'bg-red-100 text-red-700',
+    PAYMENT_CONFIRMED: 'bg-green-100 text-green-700',
   };
 
   if (loading) return (
@@ -1197,7 +1201,7 @@ const AuditLogPanel = () => {
       <div className="flex items-center justify-between">
         <p className="text-sm text-gray-500">{total} total operations</p>
         <input type="text" value={filter} onChange={e => setFilter(e.target.value)}
-          placeholder="Filter by admin username…"
+          placeholder="Filter by actor name or username…"
           className="px-3 py-2 border border-gray-200 rounded-xl text-sm text-gray-900 focus:outline-none focus:border-[#E02020] w-52" />
       </div>
       <div className="space-y-2">
@@ -1211,7 +1215,8 @@ const AuditLogPanel = () => {
                 <p className="text-sm font-semibold text-gray-900 break-words">{log.target}</p>
                 <p className="text-xs text-gray-500 mt-0.5 break-words">{log.details}</p>
                 <p className="text-xs text-gray-400 mt-1">
-                  by <span className="font-semibold text-gray-600">{log.adminUsername ?? 'unknown'}</span>
+                  by <span className="font-semibold text-gray-600">{log.actorName ?? log.adminUsername ?? log.actorEmail ?? 'system'}</span>
+                  {log.actorType && <span className="ml-1 capitalize">({log.actorType})</span>}
                   {log.ipAddress && <> · <span className="font-mono">{log.ipAddress}</span></>}
                   {' · '}{(log.createdAt ?? '').slice(0, 16).replace('T', ' ')}
                 </p>

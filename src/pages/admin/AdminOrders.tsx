@@ -8,6 +8,8 @@ type Status = AdminOrder['status'];
 
 const STATUS_STYLES: Record<Status, string> = {
   pending:    'bg-blue-100 text-blue-700 border-blue-200',
+  paid:       'bg-blue-100 text-blue-700 border-blue-200',
+  failed:     'bg-red-100 text-red-700 border-red-200',
   processing: 'bg-yellow-100 text-yellow-700 border-yellow-200',
   shipped:    'bg-purple-100 text-purple-700 border-purple-200',
   delivered:  'bg-green-100 text-green-700 border-green-200',
@@ -15,7 +17,9 @@ const STATUS_STYLES: Record<Status, string> = {
 };
 
 const STATUS_LABELS: Record<Status, string> = {
-  pending:    'Order Placed',
+  pending:    'Awaiting Payment',
+  paid:       'Paid',
+  failed:     'Payment Failed',
   processing: 'Processing',
   shipped:    'Shipped',
   delivered:  'Delivered',
@@ -126,9 +130,9 @@ const OrderModal = ({ order, onClose, onUpdate, onDelete }: OrderModalProps) => 
           <div className="bg-gray-50 rounded-xl p-4 space-y-3">
             <p className="font-montserrat font-bold text-xs text-gray-600 uppercase tracking-wider">Update Status</p>
             <div className="grid grid-cols-2 gap-2">
-             {(['pending','processing','shipped','delivered','cancelled'] as Status[]).map((s: Status) => {
+            {(['pending','processing','shipped','delivered','cancelled'] as Status[]).map((s: Status) => {
   const ORDER_RANK: Record<Status, number> = {
-    pending: 0, processing: 1, shipped: 2, delivered: 3, cancelled: 4,
+    pending: 0, paid: 1, processing: 2, shipped: 3, delivered: 4, cancelled: 5, failed: 0,
   };
   // Can't go back to a lower status once past pending
   // Exception: cancelled is always allowed
@@ -297,6 +301,7 @@ export default function AdminOrders() {
     processing: orders.filter((o: AdminOrder) => o.status === 'processing').length,
     shipped:    orders.filter((o: AdminOrder) => o.status === 'shipped').length,
     delivered:  orders.filter((o: AdminOrder) => o.status === 'delivered').length,
+    failed:     orders.filter((o: AdminOrder) => o.status === 'failed').length,
   };
 
   return (
@@ -318,13 +323,14 @@ export default function AdminOrders() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-6 gap-3">
         {([
           { k: 'total',      l: 'Total',      c: 'bg-gray-100 text-gray-700'     },
           { k: 'pending',    l: 'Placed',      c: 'bg-blue-100 text-blue-700'     },
           { k: 'processing', l: 'Processing',  c: 'bg-yellow-100 text-yellow-700' },
           { k: 'shipped',    l: 'Shipped',     c: 'bg-purple-100 text-purple-700' },
           { k: 'delivered',  l: 'Delivered',   c: 'bg-green-100 text-green-700'   },
+          { k: 'failed',     l: 'Failed',      c: 'bg-red-100 text-red-700'        },
         ] as { k: keyof typeof stats; l: string; c: string }[]).map(s => (
           <div key={s.k} className={`${s.c} rounded-xl p-3 text-center`}>
             <p className="font-montserrat font-extrabold text-xl">{stats[s.k]}</p>

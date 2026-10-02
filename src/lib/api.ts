@@ -171,7 +171,7 @@ export interface OrderItem {
 export interface Order {
   id:              number;
   order_ref:       string;
-  status:          'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'failed';
+  status:          'pending' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'failed';
   payment_status?: string;
   currency:        'NGN' | 'CAD';
   subtotal:        number;
@@ -187,6 +187,15 @@ export interface Order {
   statusHistory?:  { status: string; timestamp: string }[];
   created_at:      string;
 }
+
+// The order is created before payment starts, so older API responses can have
+// status=pending while payment_status already contains the authoritative result.
+export const normalizeOrderStatus = (order: Pick<Order, 'status' | 'payment_status'>): Order['status'] => {
+  const payment = String(order.payment_status ?? '').toLowerCase();
+  if (['failed', 'failure', 'declined', 'cancelled', 'canceled'].includes(payment)) return 'failed';
+  if (['paid', 'success', 'successful', 'captured', 'completed'].includes(payment) && order.status === 'pending') return 'paid';
+  return order.status;
+};
 
 // ── Admin types ───────────────────────────────────────────────────────────────
 export interface Customer {
@@ -280,6 +289,10 @@ export interface AuditLog {
   details:         string;
   ipAddress?:      string;
   createdAt:       string;
+  actorType?:      'admin' | 'user' | 'system';
+  actorId?:        string;
+  actorName?:      string;
+  actorEmail?:     string;
 }
 
 // ── Auth API ──────────────────────────────────────────────────────────────────
@@ -328,6 +341,15 @@ export const authApi = {
 
   setDefaultAddress: (id: string) =>
     authFetch<{ success: boolean }>(`/auth.php?action=set_default_address&id=${id}`, { method: 'POST' }),
+};
+
+// Unified activity stream. The server should persist actor_type, actor_id,
+// actor_name/email, action, target, details, ip_address and created_at.
+export const activityApi = {
+  record: (body: { action: string; target?: string; details?: string }) =>
+    authFetch<{ success: boolean }>('/activity.php', {
+      method: 'POST', body: JSON.stringify(body),
+    }),
 };
 
 // ── Wishlist API ──────────────────────────────────────────────────────────────
@@ -396,7 +418,20 @@ export const adminApi = {
     adminFetch<AdminStats>('/admin/stats.php'),
 
   getAuditLog: (params?: string) =>
-    adminFetch<{ success: boolean; data: AuditLog[]; total: number }>(`/admin/audit.php${params ? `?${params}` : ''}`),
+    adminFetch<{ success: boolean; data: AuditLog[]; total: number }>(`/admin/audit.php?scope=all${params ? `&${params}` : ''}`).then(res => ({
+      ...res,
+      data: (res.data ?? []).map((log: any) => ({
+        ...log,
+        adminId: log.adminId ?? log.admin_id,
+        adminUsername: log.adminUsername ?? log.admin_username,
+        ipAddress: log.ipAddress ?? log.ip_address,
+        createdAt: log.createdAt ?? log.created_at,
+        actorType: log.actorType ?? log.actor_type,
+        actorId: log.actorId ?? log.actor_id,
+        actorName: log.actorName ?? log.actor_name,
+        actorEmail: log.actorEmail ?? log.actor_email,
+      })),
+    })),
 };
 
 export const adminProductsApi = {

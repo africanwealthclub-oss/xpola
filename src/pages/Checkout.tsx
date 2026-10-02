@@ -193,7 +193,11 @@ const Checkout = () => {
 
   // ── PAYSTACK (NGN) ────────────────────────────────────────────────────────
   const initPaystack = async () => {
-    const psKey = 'pk_live_ed2c9100bc8dc65ac50a025717208b35f64d43f8';
+    const psKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY as string | undefined;
+    if (!psKey) {
+      setError('Payment is temporarily unavailable. Please try again later.');
+      return;
+    }
 
     // Fresh key each attempt → new order_ref → avoids duplicate ref 400
     idemKey.current = generateIdempotencyKey();

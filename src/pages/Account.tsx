@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth, SavedAddress } from '@/contexts/AuthContext';
 import { useCountry } from '@/contexts/CountryContext';
-import { ordersApi, supportApi, Order, SupportTicket } from '@/lib/api';
+import { ordersApi, supportApi, Order, SupportTicket, normalizeOrderStatus } from '@/lib/api';
 import { toast } from '@/hooks/use-toast';
 
 // ── Tab type ──────────────────────────────────────────────────────────────────
@@ -190,7 +190,9 @@ const HomeTab = ({ setTab }: { setTab: (t: Tab) => void }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    ordersApi.getUserOrders().then(setOrders).catch(console.error).finally(() => setLoading(false));
+    ordersApi.getUserOrders()
+      .then(data => setOrders(data.map(order => ({ ...order, status: normalizeOrderStatus(order) }))))
+      .catch(console.error).finally(() => setLoading(false));
   }, []);
 
   const CARDS = [
@@ -280,7 +282,9 @@ const OrdersTab = () => {
   const isNigeria = currentData.code === 'NG';
 
   useEffect(() => {
-    ordersApi.getUserOrders().then(setOrders).catch(console.error).finally(() => setLoading(false));
+    ordersApi.getUserOrders()
+      .then(data => setOrders(data.map(order => ({ ...order, status: normalizeOrderStatus(order) }))))
+      .catch(console.error).finally(() => setLoading(false));
   }, []);
 
   const handleReorder = (_order: Order) => {

@@ -321,7 +321,6 @@ foreach ($alterations as $label => $sql) {
 echo "\n=== STEP 3: Seed Default Data ===\n";
 
 $seeds = [
-    "admin account"                       => "INSERT IGNORE INTO `admins` (`username`, `password_hash`, `email`) VALUES ('admin', '\$2y\$10\$TKh8H1.PfY5HFNKJ2oQX4u5xrPfMk9V0.kXJOwMbYs9y4ZOoKFoSa', 'admin@xpolaservices.com')",
     "settings: maintenance_enabled"       => "INSERT IGNORE INTO `site_settings` (`key`,`value`) VALUES ('maintenance_enabled','0')",
     "settings: maintenance_message"       => "INSERT IGNORE INTO `site_settings` (`key`,`value`) VALUES ('maintenance_message','We are performing scheduled maintenance. Be right back!')",
     "settings: maintenance_estimated_back"=> "INSERT IGNORE INTO `site_settings` (`key`,`value`) VALUES ('maintenance_estimated_back','')",
@@ -456,10 +455,13 @@ try {
 // STEP 8: PASSWORD CHECK
 // ─────────────────────────────────────────────────────────────────────────────
 echo "=== STEP 8: Password verify ===\n";
-$hash = '$2y$10$TKh8H1.PfY5HFNKJ2oQX4u5xrPfMk9V0.kXJOwMbYs9y4ZOoKFoSa';
-$ok   = password_verify('xpola2024', $hash);
-echo ($ok ? "  ✓  password_verify('xpola2024') = TRUE — login will work\n\n"
-          : "  ✗  Hash mismatch — run: UPDATE admins SET password_hash='\$2y\$10\$TKh8H1...' WHERE username='admin'\n\n");
+try {
+    $hasHash = (bool) $db->query("SELECT 1 FROM admins WHERE password_hash IS NOT NULL AND password_hash <> '' LIMIT 1")->fetchColumn();
+    echo ($hasHash ? "  ✓  An admin password hash is configured; password contents are not printed.\n\n"
+                   : "  ✗  No admin password hash is configured.\n\n");
+} catch (Throwable $e) {
+    echo "  ✗  " . $e->getMessage() . "\n\n";
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // STEP 9: KEY FILES CHECK
@@ -754,6 +756,6 @@ try {
 }
 
 echo "\n\n=== DONE ===\n";
-echo "Default login:  username=admin  password=xpola2024\n";
+echo "No default credentials are printed by this diagnostic. Configure an admin password through the secure admin provisioning flow.\n";
 echo "⚠️  DELETE THIS FILE from the server immediately after reviewing!\n";
 echo '</pre>';

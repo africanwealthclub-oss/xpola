@@ -25,6 +25,7 @@ import OrderSuccess from '@/pages/OrderSuccess';
 import AdminLogin     from '@/pages/admin/AdminLogin';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import PaymentVerify from '@/pages/PaymentVerify';
+import CanadaComingSoon from '@/pages/CanadaComingSoon';
 
 
 import ConsultingNigeria   from '@/pages/nigeria/ConsultingService';
@@ -44,6 +45,7 @@ import PrivacyPolicy   from '@/pages/PrivacyPolicy';
 import TermsOfService  from '@/pages/TermsOfService';
 import CookiePolicy    from '@/pages/CookiePolicy';
 import CookieConsent   from '@/components/CookieConsent';
+import { MARKET_CONFIG } from '@/config/markets';
 
 import './styles/globals.css';
 
@@ -100,16 +102,19 @@ const PublicRoutes = () => {
       <Route path="/nigeria/services/ecommerce"    element={<EcommerceNigeria />} />
       <Route path="/nigeria/services/logistics"    element={<LogisticsNigeria />} />
 
-      {/* Canada */}
+      {/* Canada information and service pages remain live. Only the marketplace is gated. */}
       <Route path="/canada"          element={<Index />} />
-      
       <Route path="/canada/about"    element={<About />} />
       <Route path="/canada/services" element={<Services />} />
       <Route path="/canada/projects" element={<Projects />} />
       <Route path="/canada/contact"  element={<Contact />} />
-      <Route path="/canada/shop"            element={<Shop />} />
-      <Route path="/canada/shop/categories" element={<ShopCategory />} />
-      <Route path="/canada/checkout"        element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+      {!MARKET_CONFIG.canadaEnabled && <Route path="/canada/shop/*" element={<CanadaComingSoon />} />}
+      {!MARKET_CONFIG.canadaEnabled && <Route path="/canada/checkout" element={<CanadaComingSoon />} />}
+      {MARKET_CONFIG.canadaEnabled && <>
+        <Route path="/canada/shop"            element={<Shop />} />
+        <Route path="/canada/shop/categories" element={<ShopCategory />} />
+        <Route path="/canada/checkout"        element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+      </>}
       <Route path="/canada/services/consulting" element={<ConsultingCanada />} />
       <Route path="/canada/services/operations" element={<OperationsCanada />} />
       <Route path="/canada/services/logistics"  element={<LogisticsCanada />} />

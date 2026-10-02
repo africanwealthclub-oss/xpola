@@ -1,8 +1,14 @@
 // FILE PATH: src/contexts/AdminContext.tsx
 import { createContext, useContext, useState, ReactNode } from 'react';
-import { adminApi, adminProductsApi, ordersApi, ApiProduct, Order } from '@/lib/api';
+import { adminApi, adminProductsApi, ordersApi, ApiProduct, Order, normalizeOrderStatus } from '@/lib/api';
 
-export type AdminOrder = Order & { items: NonNullable<Order['items']> };
+export type AdminOrder = Order & {
+  items: NonNullable<Order['items']>;
+  customer_email?: string;
+  customer_phone?: string;
+  country?: 'NG' | 'CA';
+  total_amount?: number;
+};
 
 interface AdminContextType {
   adminToken:      string | null;
@@ -80,7 +86,11 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
     try {
       const res = await ordersApi.getAll();
       const raw = (res as any).data ?? res;
-      setOrders((Array.isArray(raw) ? raw : []).map((o: Order) => ({ ...o, items: o.items ?? [] })) as AdminOrder[]);
+      setOrders((Array.isArray(raw) ? raw : []).map((o: Order) => ({
+        ...o,
+        status: normalizeOrderStatus(o),
+        items: o.items ?? [],
+      })) as AdminOrder[]);
     } catch (e) { console.error('Failed to fetch orders:', e); }
     finally { setOrdersLoading(false); }
   };

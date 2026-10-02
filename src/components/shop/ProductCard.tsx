@@ -90,9 +90,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
         </div>
 
         {/* Price + CTA */}
-        <div className="flex items-end justify-between pt-2.5 border-t border-gray-100 gap-1">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between pt-2.5 border-t border-gray-100 gap-2 min-w-0">
           <div className="min-w-0">
-            <p className="font-montserrat font-extrabold text-sm sm:text-base md:text-lg text-gray-900 truncate">
+            <p className="font-montserrat font-extrabold text-sm sm:text-base md:text-lg text-gray-900 leading-tight break-words">
               {formatPrice(product.price, product.currency)}
             </p>
             <p
@@ -107,7 +107,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           <button
             onClick={handleAdd}
             disabled={!product.inStock || adding}
-            className={`font-montserrat font-bold text-[9px] sm:text-[10px] px-2.5 sm:px-3.5 py-2 uppercase tracking-wide transition-all duration-200 flex-shrink-0 ${
+            className={`w-full sm:w-auto font-montserrat font-bold text-[9px] sm:text-[10px] px-2.5 sm:px-3.5 py-2 uppercase tracking-wide transition-all duration-200 flex-shrink-0 whitespace-nowrap ${
               !product.inStock
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 : adding

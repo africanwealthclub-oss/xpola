@@ -5,7 +5,13 @@ require_once __DIR__ . '/../config/cors.php';
 header('Content-Type: application/json');
 
 $ref    = $_GET['reference'] ?? '';
-$secret = getenv('PAYSTACK_SECRET_KEY') ?: 'sk_test_1422bcc00029a3d0a6726a5d20c152a8164cd99b';
+$secret = getenv('PAYSTACK_SECRET_KEY');
+
+if (!$secret) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Payment verification is not configured']);
+    exit;
+}
 
 if (!$ref) {
     http_response_code(400);

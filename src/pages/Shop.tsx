@@ -108,12 +108,14 @@ const ProductCard = ({ product }: { product: ApiProduct }) => {
             <span className="text-[10px] text-gray-400 font-poppins">({product.reviews})</span>
           </div>
         )}
-        <div className="flex items-center justify-between gap-2 mt-auto">
-          <span className="font-montserrat font-extrabold text-gray-900 text-base">{formatPrice(product.price, product.currency)}</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-auto min-w-0">
+          <span className="min-w-0 font-montserrat font-extrabold text-gray-900 text-sm sm:text-base leading-tight break-words">
+            {formatPrice(product.price, product.currency)}
+          </span>
           <button
             onClick={handleAdd}
             disabled={product.stock_status !== 'in_stock' || adding}
-            className={`font-montserrat font-bold text-xs px-3 py-2 uppercase tracking-wide transition-all flex-shrink-0 ${
+            className={`w-full sm:w-auto font-montserrat font-bold text-[10px] sm:text-xs px-3 py-2 uppercase tracking-wide transition-all flex-shrink-0 whitespace-nowrap ${
               product.stock_status !== 'in_stock'
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 : adding

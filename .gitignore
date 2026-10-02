@@ -3,3 +3,6 @@ dist/
 .env
 .env.*
 !.env.example
+
+# Local production artifact
+xpola-services-dist.zip

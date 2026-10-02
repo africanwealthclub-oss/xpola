@@ -1,7 +1,7 @@
 // FILE PATH: src/contexts/AuthContext.tsx
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
 import {
-  authApi, wishlistApi, loyaltyApi, notificationsApi, referralApi,
+  authApi, wishlistApi, loyaltyApi, notificationsApi, referralApi, activityApi,
   UserProfile, SavedAddress, WishlistItem, LoyaltyTransaction,
   Notification, Referral,
 } from '@/lib/api';
@@ -120,6 +120,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('xpola_token', token);
     setUser(profile);
     loadUserData();
+    activityApi.record({ action: 'REGISTER', target: 'account', details: `Customer account created for ${email}` }).catch(() => {});
   };
 
   const login = async (email: string, password: string) => {
@@ -127,6 +128,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('xpola_token', token);
     setUser(profile);
     loadUserData();
+    activityApi.record({ action: 'LOGIN', target: 'account', details: `Customer signed in as ${email}` }).catch(() => {});
   };
 
   const logout = () => {
@@ -144,6 +146,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const updateUserProfile = async (data: Partial<Pick<UserProfile, 'firstName' | 'lastName' | 'phone'>>) => {
     await authApi.updateProfile(data);
     setUser(prev => prev ? { ...prev, ...data } : prev);
+    activityApi.record({ action: 'UPDATE_PROFILE', target: 'profile', details: 'Customer updated profile details' }).catch(() => {});
   };
 
   const uploadAvatar = async (file: File) => {
@@ -171,6 +174,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const deleteAddress = async (id: string) => {
     await authApi.deleteAddress(id);
     setUser(prev => prev ? { ...prev, addresses: prev.addresses.filter(a => a.id !== id) } : prev);
+    activityApi.record({ action: 'DELETE_ADDRESS', target: id, details: 'Customer deleted a saved address' }).catch(() => {});
   };
 
   const setDefaultAddress = async (id: string) => {
@@ -182,11 +186,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const addToWishlist = async (productId: string) => {
     const { id } = await wishlistApi.add(productId);
     setWishlist(prev => [...prev, { id, productId, product: {} as any, addedAt: new Date().toISOString(), notifyOnRestock: false }]);
+    activityApi.record({ action: 'ADD_WISHLIST', target: productId, details: 'Customer added a product to wishlist' }).catch(() => {});
   };
 
   const removeFromWishlist = async (id: string) => {
     await wishlistApi.remove(id);
     setWishlist(prev => prev.filter(w => w.id !== id));
+    activityApi.record({ action: 'REMOVE_WISHLIST', target: id, details: 'Customer removed a product from wishlist' }).catch(() => {});
   };
 
   const isInWishlist = (productId: string) => wishlist.some(w => w.productId === productId);

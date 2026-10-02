@@ -12,7 +12,7 @@ import logoBlack from "@/assets/logo-black.png";
 
 const countries = [
   { code: "nigeria", name: "Nigeria", flag: "🇳🇬" },
-  { code: "canada",  name: "Canada",  flag: "🇨🇦" },
+  { code: "canada", name: "Canada", flag: "🇨🇦" },
 ];
 
 const Navbar = () => {
