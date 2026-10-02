@@ -236,6 +236,24 @@ if ($method === 'POST') {
         json(['success' => true, 'status' => 'pending', 'payment_status' => 'pending']);
     }
 
+    // ── CANCEL UNPAID ORDER ────────────────────────────────────────────────────
+    // Cancellation is distinct from a failed payment: keep payment_status
+    // pending for reporting, but remove the order from Awaiting Payment.
+    if ($action === 'cancel_payment') {
+        $orderId = (int)($b['order_id'] ?? 0);
+        if (!$orderId) jsonError('order_id required');
+
+        $stmt = $db->prepare("UPDATE orders SET status='cancelled', updated_at=NOW() WHERE id=? AND uid=? AND status='pending' AND payment_status='pending'");
+        $stmt->execute([$orderId, $uid]);
+        if ($stmt->rowCount() === 0) jsonError('Order was not found or is no longer awaiting payment', 409);
+
+        $refStmt = $db->prepare('SELECT order_ref FROM orders WHERE id=? AND uid=? LIMIT 1');
+        $refStmt->execute([$orderId, $uid]);
+        $ref = $refStmt->fetchColumn() ?: (string)$orderId;
+        logActivity($db, 'user', (string)$uid, $userRow['first_name'] ?? null, $userRow['email'] ?? null, 'ORDER_CANCELLED', (string)$ref, 'Customer cancelled unpaid order');
+        json(['success' => true, 'status' => 'cancelled', 'payment_status' => 'pending']);
+    }
+
     // ── CONFIRM PAYMENT ───────────────────────────────────────────────────────
     if ($action === 'confirm_payment') {
         $orderId     = (int)($b['order_id'] ?? 0);

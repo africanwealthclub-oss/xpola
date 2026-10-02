@@ -104,12 +104,33 @@ const ResumePaymentButton = ({ order, email, onComplete }: {
     await initializePayment();
   };
 
+  const handleCancel = async () => {
+    if (!window.confirm('Cancel this unpaid order? You will not be able to resume its payment.')) return;
+    setStarting(true);
+    setMessage('');
+    try {
+      await apiPost('/orders.php', { action: 'cancel_payment', order_id: order.id }, true);
+      setMessage('Order cancelled');
+      onComplete();
+    } catch (err: unknown) {
+      setMessage((err as Error).message || 'Could not cancel this order.');
+    } finally {
+      setStarting(false);
+    }
+  };
+
   return (
     <div className="flex flex-col items-end gap-1">
-      <button type="button" onClick={handleResume} disabled={starting}
-        className="text-[11px] font-bold text-[#E02020] border border-[#E02020] px-3 py-1.5 rounded-lg hover:bg-red-50 disabled:opacity-50">
-        {starting ? 'Opening payment…' : 'Resume Payment'}
-      </button>
+      <div className="flex items-center gap-2">
+        <button type="button" onClick={handleResume} disabled={starting}
+          className="text-[11px] font-bold text-[#E02020] border border-[#E02020] px-3 py-1.5 rounded-lg hover:bg-red-50 disabled:opacity-50">
+          {starting ? 'Opening payment…' : 'Resume Payment'}
+        </button>
+        <button type="button" onClick={handleCancel} disabled={starting}
+          className="text-[11px] font-bold text-gray-600 border border-gray-300 px-3 py-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-50">
+          Cancel Payment
+        </button>
+      </div>
       {message && <span className="text-[10px] text-gray-500 text-right max-w-[180px]">{message}</span>}
     </div>
   );
