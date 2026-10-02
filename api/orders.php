@@ -122,7 +122,12 @@ try { $db->exec("ALTER TABLE orders MODIFY status ENUM('pending','paid','process
 
 // ── Verify payment with Paystack ──────────────────────────────────────────────
 function verifyPaystackPayment(string $reference): ?array {
-    $secret = getenv('PAYSTACK_SECRET_KEY') ?: '';
+    // Prefer the server environment, while supporting deployments that define
+    // the existing secret in a PHP config constant. Never expose this secret
+    // in frontend code or commit it to the repository.
+    $secret = getenv('PAYSTACK_SECRET_KEY')
+        ?: (defined('PAYSTACK_SECRET_KEY') ? PAYSTACK_SECRET_KEY : '')
+        ?: (defined('PAYSTACK_SECRET') ? PAYSTACK_SECRET : '');
     if (!$secret) { error_log('[Xpola] PAYSTACK_SECRET_KEY is not configured'); return null; }
     $ch = curl_init("https://api.paystack.co/transaction/verify/" . urlencode($reference));
     curl_setopt_array($ch, [
