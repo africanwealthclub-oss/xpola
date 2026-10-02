@@ -96,6 +96,10 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateOrderStatus = async (id: number, status: AdminOrder['status']) => {
+    const current = orders.find(o => o.id === id);
+    if (current?.status === 'pending' && current.payment_status !== 'paid') {
+      throw new Error('This order is awaiting payment and cannot be changed until payment is confirmed.');
+    }
     await ordersApi.updateStatus(id, status);
     setOrders(prev => prev.map(o => o.id === id ? { ...o, status } : o));
   };
