@@ -20,7 +20,7 @@ const STATUS_LABELS: Record<Status, string> = {
   pending:    'Awaiting Payment',
   paid:       'Paid',
   failed:     'Payment Failed',
-  processing: 'Processing',
+  processing: 'Processing (Paid)',
   shipped:    'Shipped',
   delivered:  'Delivered',
   cancelled:  'Cancelled',
@@ -59,6 +59,7 @@ const OrderModal = ({ order, onClose, onUpdate, onDelete }: OrderModalProps) => 
   const [saved,     setSaved]     = useState(false);
   const [deleting,  setDeleting]  = useState(false);
   const [confirmDel,setConfirmDel]= useState(false);
+  const isAwaitingPayment = order.status === 'pending' && order.payment_status !== 'paid';
 
   const handleSave = async () => {
     setSaving(true);
@@ -129,6 +130,11 @@ const OrderModal = ({ order, onClose, onUpdate, onDelete }: OrderModalProps) => 
           {/* Update status */}
           <div className="bg-gray-50 rounded-xl p-4 space-y-3">
             <p className="font-montserrat font-bold text-xs text-gray-600 uppercase tracking-wider">Update Status</p>
+            {isAwaitingPayment && (
+              <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">
+                This order is locked at Awaiting Payment. The status will change automatically to Processing (Paid) after Paystack confirms payment.
+              </p>
+            )}
             <div className="grid grid-cols-2 gap-2">
             {(['pending','processing','shipped','delivered','cancelled'] as Status[]).map((s: Status) => {
   const ORDER_RANK: Record<Status, number> = {
@@ -137,12 +143,12 @@ const OrderModal = ({ order, onClose, onUpdate, onDelete }: OrderModalProps) => 
   // Can't go back to a lower status once past pending
   // Exception: cancelled is always allowed
   const currentRank = ORDER_RANK[order.status];
-  const isLocked = s !== 'cancelled' && ORDER_RANK[s] < currentRank;
+  const isLocked = isAwaitingPayment || (s !== 'cancelled' && ORDER_RANK[s] < currentRank);
 
   return (
     <button key={s} onClick={() => !isLocked && setStatus(s)}
       disabled={isLocked}
-      title={isLocked ? 'Cannot revert to a previous status' : undefined}
+      title={isAwaitingPayment ? 'Awaiting payment confirmation' : isLocked ? 'Cannot revert to a previous status' : undefined}
       className={`py-2 px-3 rounded-lg text-xs font-bold border transition-all
         ${isLocked
           ? 'border-gray-100 text-gray-300 bg-gray-50 cursor-not-allowed'
@@ -155,11 +161,11 @@ const OrderModal = ({ order, onClose, onUpdate, onDelete }: OrderModalProps) => 
   );
 })}
             </div>
-            <button onClick={handleSave} disabled={saving}
+            <button onClick={handleSave} disabled={saving || isAwaitingPayment}
               className="w-full bg-[#E02020] text-white font-semibold py-3 rounded-xl text-sm hover:bg-red-700 transition-colors disabled:opacity-60 flex items-center justify-center gap-2">
               {saving
                 ? <><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/></svg>Saving…</>
-                : saved ? '✓ Saved!' : 'Save Changes'}
+                : saved ? '✓ Saved!' : isAwaitingPayment ? 'Locked Until Payment' : 'Save Changes'}
             </button>
           </div>
 

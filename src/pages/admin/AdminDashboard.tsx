@@ -155,6 +155,12 @@ const Overview = ({ setView }: { setView: (v: AdminView) => void }) => {
     cancelled:  'bg-red-100 text-red-600',
   };
 
+  const statusLabel = (status: string) => status === 'pending'
+    ? 'Awaiting Payment'
+    : status === 'processing'
+      ? 'Processing (Paid)'
+      : status.charAt(0).toUpperCase() + status.slice(1);
+
   if (loading) return (
     <div className="flex items-center justify-center py-20">
       <svg className="w-8 h-8 animate-spin text-[#E02020]" fill="none" viewBox="0 0 24 24">
@@ -220,7 +226,7 @@ const Overview = ({ setView }: { setView: (v: AdminView) => void }) => {
                     {order.currency === 'CAD' ? 'CA$' : '₦'}{(order.total ?? 0).toLocaleString()}
                   </p>
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${statusStyle[order.status] ?? 'bg-gray-100 text-gray-600'}`}>
-                    {order.status}
+                    {statusLabel(order.status)}
                   </span>
                 </div>
               </div>

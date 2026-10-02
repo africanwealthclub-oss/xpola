@@ -4,6 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth, SavedAddress } from '@/contexts/AuthContext';
 import { useCountry } from '@/contexts/CountryContext';
 import { ordersApi, supportApi, Order, SupportTicket, normalizeOrderStatus } from '@/lib/api';
+import { apiPost } from '@/api';
+import { usePaystack } from '@/hooks/usePaystack';
 import { toast } from '@/hooks/use-toast';
 
 // ── Tab type ──────────────────────────────────────────────────────────────────
@@ -29,12 +31,12 @@ const STATUS_COLOR: Record<string, string> = {
 
 const STATUS_LABEL: Record<string, string> = {
   paid:       'Paid',
-  processing: 'Paid',          // show Paid since payment was captured
+  processing: 'Processing (Paid)',
   shipped:    'Shipped',
   delivered:  'Delivered',
   cancelled:  'Cancelled',
   failed:     'Failed',
-  pending:    'Failed',        // pending = payment never completed = Failed
+  pending:    'Awaiting Payment',
 };
 
 const TIER_COLOR: Record<string, string> = {
@@ -52,6 +54,91 @@ const Spinner = () => (
     </svg>
   </div>
 );
+
+const ResumePaymentButton = ({ order, email, onComplete }: {
+  order: Order;
+  email?: string;
+  onComplete: () => void;
+}) => {
+  const [starting, setStarting] = useState(false);
+  const [message, setMessage] = useState('');
+  const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY as string | undefined;
+  const canResume = order.status === 'pending'
+    && order.payment_status !== 'paid'
+    && order.currency === 'NGN';
+
+  const initializePayment = usePaystack({
+    key: publicKey ?? '',
+    email: email ?? (order as any).customer_email ?? `order-${order.id}@xpola.com`,
+    amount: Math.round(Number(order.total || 0) * 100),
+    currency: 'NGN',
+    ref: `${order.order_ref}_retry_${Date.now()}`,
+    metadata: { order_id: order.id, order_ref: order.order_ref, retry: true },
+    onSuccess: async (response) => {
+      try {
+        await apiPost('/orders.php', {
+          action: 'confirm_payment',
+          order_id: order.id,
+          paystack_reference: response.reference,
+        }, true);
+        setMessage('Payment confirmed');
+        onComplete();
+      } catch (err: unknown) {
+        setMessage((err as Error).message || 'Payment was received but confirmation is still processing.');
+      } finally {
+        setStarting(false);
+      }
+    },
+    onClose: () => setStarting(false),
+    onError: (err) => {
+      setStarting(false);
+      setMessage((err as Error)?.message || 'Could not open Paystack. Please try again.');
+    },
+  });
+
+  if (!canResume) return null;
+
+  const handleResume = async () => {
+    if (!publicKey) {
+      setMessage('Payment is temporarily unavailable. Please try again later.');
+      return;
+    }
+    setStarting(true);
+    setMessage('');
+    await initializePayment();
+  };
+
+  const handleCancel = async () => {
+    if (!window.confirm('Cancel this unpaid order? You will not be able to resume its payment.')) return;
+    setStarting(true);
+    setMessage('');
+    try {
+      await apiPost('/orders.php', { action: 'cancel_payment', order_id: order.id }, true);
+      setMessage('Order cancelled');
+      onComplete();
+    } catch (err: unknown) {
+      setMessage((err as Error).message || 'Could not cancel this order.');
+    } finally {
+      setStarting(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-end gap-1">
+      <div className="flex items-center gap-2">
+        <button type="button" onClick={handleResume} disabled={starting}
+          className="text-[11px] font-bold text-[#E02020] border border-[#E02020] px-3 py-1.5 rounded-lg hover:bg-red-50 disabled:opacity-50">
+          {starting ? 'Opening payment…' : 'Resume Payment'}
+        </button>
+        <button type="button" onClick={handleCancel} disabled={starting}
+          className="text-[11px] font-bold text-gray-600 border border-gray-300 px-3 py-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-50">
+          Cancel Payment
+        </button>
+      </div>
+      {message && <span className="text-[10px] text-gray-500 text-right max-w-[180px]">{message}</span>}
+    </div>
+  );
+};
 
 // ── Receipt printer ───────────────────────────────────────────────────────────
 function printReceipt(order: Order) {
@@ -279,6 +366,7 @@ const OrdersTab = () => {
   const [page, setPage]       = useState(1);
   const ORDERS_PER_PAGE = 8;
   const { currentData } = useCountry();
+  const { user } = useAuth();
   const isNigeria = currentData.code === 'NG';
 
   useEffect(() => {
@@ -289,6 +377,11 @@ const OrdersTab = () => {
 
   const handleReorder = (_order: Order) => {
     window.location.href = isNigeria ? '/nigeria/shop' : '/canada/shop';
+  };
+
+  const refreshOrders = async () => {
+    const data = await ordersApi.getUserOrders();
+    setOrders(data.map(order => ({ ...order, status: normalizeOrderStatus(order) })));
   };
 
   const allFiltered = orders.filter(o => {
@@ -374,6 +467,8 @@ const OrdersTab = () => {
                       {((order as any).discount_amount ?? 0) > 0 && <div className="col-span-2"><span className="text-gray-500">Discount:</span> <span className="text-green-400">-{order.currency === 'NGN' ? '₦' : 'CA$'}{Number((order as any).discount_amount || 0).toLocaleString()}</span></div>}
                     </div>
                   </div>
+
+                  <ResumePaymentButton order={order} email={user?.email} onComplete={refreshOrders} />
 
                   {order.trackingNumber && (
                     <div className="flex items-center gap-2 bg-purple-50 border border-purple-100 rounded-xl px-4 py-3">

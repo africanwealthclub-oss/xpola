@@ -10,6 +10,7 @@ interface PaystackOptions {
   metadata?: Record<string, unknown>;
   onSuccess: (reference: { reference: string }) => void;
   onClose: () => void;
+  onError?: (error: unknown) => void;
 }
 
 declare global {
@@ -35,6 +36,19 @@ export const usePaystack = (options: PaystackOptions) => {
   const initializePayment = async () => {
     try {
       await loadPaystackScript();
+      if (typeof window.PaystackPop?.setup !== 'function') {
+        throw new Error('Paystack checkout is not available');
+      }
+
+      // Paystack validates these two properties at runtime. Wrap the supplied
+      // handlers so the SDK always receives real function values.
+      const callback = (reference: { reference: string }) => {
+        if (typeof options.onSuccess === 'function') options.onSuccess(reference);
+      };
+      const onClose = () => {
+        if (typeof options.onClose === 'function') options.onClose();
+      };
+
       const handler = window.PaystackPop.setup({
         key:      options.key,
         email:    options.email,
@@ -42,13 +56,16 @@ export const usePaystack = (options: PaystackOptions) => {
         currency: options.currency || 'NGN',
         ref:      options.ref || `xpola_${Date.now()}`,
         metadata: options.metadata || {},
-        callback: options.onSuccess,
-        onClose:  options.onClose,
+        callback,
+        onClose,
       });
+      if (!handler || typeof handler.openIframe !== 'function') {
+        throw new Error('Paystack checkout could not be opened');
+      }
       handler.openIframe();
     } catch (err) {
       console.error('Paystack initialization failed:', err);
-      alert('Payment system failed to load. Please check your connection and try again.');
+      options.onError?.(err);
     }
   };
 
