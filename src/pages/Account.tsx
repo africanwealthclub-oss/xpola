@@ -90,6 +90,10 @@ const ResumePaymentButton = ({ order, email, onComplete }: {
       }
     },
     onClose: () => setStarting(false),
+    onError: (err) => {
+      setStarting(false);
+      setMessage((err as Error)?.message || 'Could not open Paystack. Please try again.');
+    },
   });
 
   if (!canResume) return null;
