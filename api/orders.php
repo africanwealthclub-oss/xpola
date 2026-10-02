@@ -120,6 +120,11 @@ $db->exec("CREATE TABLE IF NOT EXISTS orders (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 try { $db->exec("ALTER TABLE orders MODIFY status ENUM('pending','paid','processing','shipped','delivered','cancelled','failed') NOT NULL DEFAULT 'pending'"); } catch (Throwable $e) { error_log('[Xpola Orders] status migration: ' . $e->getMessage()); }
 
+// Optional server-only Paystack config. This file must never be committed or
+// served to the browser; it may define PAYSTACK_SECRET_KEY or PAYSTACK_SECRET.
+$paystackConfig = __DIR__ . '/config/paystack.php';
+if (is_file($paystackConfig)) require_once $paystackConfig;
+
 // ── Verify payment with Paystack ──────────────────────────────────────────────
 function verifyPaystackPayment(string $reference): ?array {
     // Prefer the server environment, while supporting deployments that define
